@@ -1,0 +1,57 @@
+{
+  "realm": "dls",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "customer", "description": "Customer role" },
+      { "name": "courier", "description": "Courier role" },
+      { "name": "restaurant", "description": "Restaurant role" },
+      { "name": "admin", "description": "Admin role" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "dls-gateway",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "redirectUris": ["http://localhost:*", "http://127.0.0.1:*"],
+      "webOrigins": ["*"],
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "email": "testuser@example.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["customer"]
+    },
+    {
+      "username": "testcourier",
+      "enabled": true,
+      "email": "testcourier@example.com",
+      "firstName": "Test",
+      "lastName": "Courier",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["courier"]
+    }
+  ]
+}
