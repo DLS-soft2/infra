@@ -28,7 +28,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/dls
+      KEYCLOAK_ISSUER_URL: http://localhost:8080/realms/dls
+      KEYCLOAK_JWKS_ISSUER_URL: http://keycloak:8080/realms/dls
       KEYCLOAK_AUDIENCE: dls-gateway
       PROXY_TIMEOUT_SECONDS: "30"
       ORDER_SERVICE_BASE_URL: http://order-service:8000
@@ -43,17 +44,17 @@ services:
     networks:
       - default
 
-  order-service:
-    image: ghcr.io/dls-soft2/order-service:latest
-    ports:
-      - "8001:8000"
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-    depends_on:
-      kafka:
-        condition: service_healthy
-    networks:
-      - default
+  # order-service:
+  #   image: ghcr.io/dls-soft2/order-service:latest
+  #   ports:
+  #     - "8001:8000"
+  #   environment:
+  #     KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  #   depends_on:
+  #     kafka:
+  #       condition: service_healthy
+  #   networks:
+  #     - default
 
 networks:
   default:
