@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: dls
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: ghcr.io/dls-soft2/notification-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+            - name: REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: KAFKA_TOPIC_ORDERS
+              value: "orders"
+            - name: KAFKA_TOPIC_PAYMENTS
+              value: "payments"
+            - name: KAFKA_TOPIC_RESTAURANTS
+              value: "restaurants"
+            - name: KAFKA_TOPIC_COURIERS
+              value: "couriers"
+            - name: KAFKA_TOPIC_DELIVERIES
+              value: "deliveries"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: dls
+spec:
+  type: ClusterIP
+  selector:
+    app: notification-service
+  ports:
+    - port: 80
+      targetPort: 8000

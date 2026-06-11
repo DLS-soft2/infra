@@ -1,0 +1,42 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: notification-dispatch
+  namespace: dls
+spec:
+  pollingInterval: 15
+  maxReplicaCount: 3
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: kafka.dls.svc.cluster.local:9092
+        consumerGroup: notification-dispatch-group
+        topic: deliveries
+        lagThreshold: "1"
+        offsetResetPolicy: latest
+  jobTargetRef:
+    template:
+      spec:
+        containers:
+          - name: notification-dispatch
+            image: ghcr.io/dls-soft2/notification-service:latest
+            imagePullPolicy: IfNotPresent
+            env:
+              - name: KAFKA_BOOTSTRAP_SERVERS
+                value: "kafka.dls.svc.cluster.local:9092"
+              - name: REDIS_URL
+                value: "redis://redis.dls.svc.cluster.local:6379/0"
+              - name: KAFKA_TOPIC_DELIVERIES
+                value: "deliveries"
+              - name: DISPATCH_MODE
+                value: "true"
+            resources:
+              limits:
+                memory: "256Mi"
+                cpu: "250m"
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+        restartPolicy: Never
