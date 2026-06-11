@@ -25,7 +25,7 @@ done
 
 echo ""
 echo "Application services:"
-for svc in api-gateway order-service payment-service restaurant-service courier-service notification-service user-service ai-service; do
+for svc in api-gateway order-service payment-service restaurant-service courier-service notification-service user-service ai-service frontend; do
   check_pod $svc
 done
 
@@ -38,6 +38,17 @@ if [ "$HTTP_CODE" = "200" ]; then
   PASS=$((PASS + 1))
 else
   echo "API Gateway not responding on :30000 (HTTP $HTTP_CODE)"
+  FAIL=$((FAIL + 1))
+fi
+
+echo ""
+echo "Frontend connectivity:"
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "http://$MINIKUBE_IP:30010" 2>/dev/null || echo "000")
+if [ "$HTTP_CODE" = "200" ]; then
+  echo "Frontend responding on :30010 (HTTP $HTTP_CODE)"
+  PASS=$((PASS + 1))
+else
+  echo "X Frontend not responding on :30010 (HTTP $HTTP_CODE)"
   FAIL=$((FAIL + 1))
 fi
 

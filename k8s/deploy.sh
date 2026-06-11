@@ -34,7 +34,7 @@ echo "[4/7] Deploying application services..."
 kubectl apply -f "$SCRIPT_DIR/services/"
 
 echo "Waiting for services to be ready..."
-for svc in api-gateway order-service payment-service restaurant-service courier-service notification-service user-service ai-service; do
+for svc in api-gateway order-service payment-service restaurant-service courier-service notification-service user-service ai-service frontend; do
   kubectl wait --for=condition=ready pod -l app=$svc -n dls --timeout=120s
 done
 
@@ -57,6 +57,7 @@ echo "[7/7] Deployment complete!"
 echo ""
 MINIKUBE_IP=$(minikube ip 2>/dev/null || echo "localhost")
 echo "Access points:"
+echo "  Frontend:     http://$MINIKUBE_IP:30010"
 echo "  API Gateway:  http://$MINIKUBE_IP:30000"
 echo "  Keycloak:     http://$MINIKUBE_IP:30080"
 echo "  Grafana:      http://$MINIKUBE_IP:30030 (admin/admin)"
