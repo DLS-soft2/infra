@@ -27,6 +27,13 @@ spec:
                   key: postgres-password
             - name: DATABASE_URL
               value: "postgresql://postgres:$(DB_PASSWORD)@postgres:5432/user_db"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /health

@@ -26,6 +26,13 @@ spec:
               value: "kafka:9092"
             - name: SERVER_PORT
               value: "8000"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /actuator/health

@@ -23,6 +23,13 @@ spec:
             # Ollama must be running on host; fallback scorer activates if unreachable
             - name: OLLAMA_BASE_URL
               value: "http://host.minikube.internal:11434"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /health

@@ -41,6 +41,13 @@ spec:
               value: "http://notification-service"
             - name: USER_SERVICE_BASE_URL
               value: "http://user-service"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /healthy
