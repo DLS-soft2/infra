@@ -36,6 +36,7 @@
   ],
   "users": [
     {
+      "id": "aaaaaaaa-1111-2222-3333-000000000001",
       "username": "testuser",
       "enabled": true,
       "email": "testuser@example.com",
@@ -51,6 +52,7 @@
       "realmRoles": ["customer"]
     },
     {
+      "id": "aaaaaaaa-1111-2222-3333-000000000002",
       "username": "testcourier",
       "enabled": true,
       "email": "testcourier@example.com",
@@ -64,6 +66,22 @@
         }
       ],
       "realmRoles": ["courier"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-000000000003",
+      "username": "testrestaurant",
+      "enabled": true,
+      "email": "testrestaurant@example.com",
+      "firstName": "Test",
+      "lastName": "Restaurant",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["restaurant"]
     }
   ]
 }
