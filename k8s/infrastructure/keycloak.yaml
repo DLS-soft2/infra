@@ -8,6 +8,7 @@ data:
     {
       "realm": "dls",
       "enabled": true,
+      "registrationAllowed": true,
       "roles": {
         "realm": [
           { "name": "customer", "description": "Customer role" },
