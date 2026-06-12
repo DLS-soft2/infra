@@ -51,10 +51,14 @@ kind: Service
 metadata:
   name: restaurant-service
   namespace: dls
+  labels:
+    app: restaurant-service
+    monitoring: enabled
 spec:
   type: ClusterIP
   selector:
     app: restaurant-service
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8000

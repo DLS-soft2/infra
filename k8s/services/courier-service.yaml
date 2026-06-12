@@ -64,10 +64,14 @@ kind: Service
 metadata:
   name: courier-service
   namespace: dls
+  labels:
+    app: courier-service
+    monitoring: enabled
 spec:
   type: ClusterIP
   selector:
     app: courier-service
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8000

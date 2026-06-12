@@ -58,10 +58,14 @@ kind: Service
 metadata:
   name: payment-service
   namespace: dls
+  labels:
+    app: payment-service
+    monitoring: enabled
 spec:
   type: ClusterIP
   selector:
     app: payment-service
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8000

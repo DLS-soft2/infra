@@ -64,10 +64,14 @@ kind: Service
 metadata:
   name: order-service
   namespace: dls
+  labels:
+    app: order-service
+    monitoring: enabled
 spec:
   type: ClusterIP
   selector:
     app: order-service
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 8000
