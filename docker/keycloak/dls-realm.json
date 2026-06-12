@@ -84,6 +84,150 @@
         }
       ],
       "realmRoles": ["restaurant"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-c00000000001",
+      "username": "courier-dls",
+      "enabled": true,
+      "email": "dls@courier.dls",
+      "firstName": "DLS",
+      "lastName": "Courier",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["courier"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-c00000000002",
+      "username": "courier-flash",
+      "enabled": true,
+      "email": "flash@courier.dls",
+      "firstName": "Flash",
+      "lastName": "Courier",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["courier"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-c00000000003",
+      "username": "courier-turbo",
+      "enabled": true,
+      "email": "turbo@courier.dls",
+      "firstName": "Turbo",
+      "lastName": "Courier",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["courier"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-c00000000004",
+      "username": "courier-blaze",
+      "enabled": true,
+      "email": "blaze@courier.dls",
+      "firstName": "Blaze",
+      "lastName": "Courier",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["courier"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-c00000000005",
+      "username": "courier-dash",
+      "enabled": true,
+      "email": "dash@courier.dls",
+      "firstName": "Dash",
+      "lastName": "Courier",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["courier"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-d00000000001",
+      "username": "restaurant-baan",
+      "enabled": true,
+      "email": "baan@restaurant.dls",
+      "firstName": "Baan",
+      "lastName": "Owner",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["restaurant"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-d00000000002",
+      "username": "restaurant-sakura",
+      "enabled": true,
+      "email": "sakura@restaurant.dls",
+      "firstName": "Sakura",
+      "lastName": "Owner",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["restaurant"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-d00000000003",
+      "username": "restaurant-viking",
+      "enabled": true,
+      "email": "viking@restaurant.dls",
+      "firstName": "Viking",
+      "lastName": "Owner",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["restaurant"]
+    },
+    {
+      "id": "aaaaaaaa-1111-2222-3333-d00000000004",
+      "username": "restaurant-curry",
+      "enabled": true,
+      "email": "curry@restaurant.dls",
+      "firstName": "Curry",
+      "lastName": "Owner",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pass",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["restaurant"]
     }
   ]
 }
