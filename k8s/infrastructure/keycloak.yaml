@@ -56,8 +56,8 @@ data:
           "linkOnly": false,
           "firstBrokerLoginFlowAlias": "first broker login",
           "config": {
-            "clientId": "GOOGLE_CLIENT_ID",
-            "clientSecret": "GOOGLE_CLIENT_SECRET",
+            "clientId": "${GOOGLE_CLIENT_ID}",
+            "clientSecret": "${GOOGLE_CLIENT_SECRET}",
             "defaultScope": "openid email profile",
             "useJwksUrl": "true",
             "syncMode": "IMPORT"
@@ -302,6 +302,16 @@ spec:
                 secretKeyRef:
                   name: dls-secrets
                   key: keycloak-admin-password
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dls-secrets
+                  key: google-client-id
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dls-secrets
+                  key: google-client-secret
           volumeMounts:
             - name: realm-config
               mountPath: /opt/keycloak/data/import/

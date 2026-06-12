@@ -32,6 +32,8 @@ spec:
                 value: "deliveries"
               - name: DISPATCH_MODE
                 value: "true"
+              - name: KAFKA_GROUP_ID
+                value: "notification-dispatch-group"
             resources:
               limits:
                 memory: "256Mi"

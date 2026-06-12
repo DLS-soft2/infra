@@ -10,18 +10,36 @@ echo "[1/7] Creating namespace and secrets..."
 kubectl apply -f "$SCRIPT_DIR/namespace.yaml"
 kubectl apply -f "$SCRIPT_DIR/secrets.yaml"
 
+# Google OAuth creds come from the same gitignored .env that docker compose uses
+if [ -f "$SCRIPT_DIR/../docker/.env" ]; then
+  set -a
+  # shellcheck source=/dev/null
+  source "$SCRIPT_DIR/../docker/.env"
+  set +a
+fi
+if [ -n "${GOOGLE_CLIENT_ID:-}" ] && [ -n "${GOOGLE_CLIENT_SECRET:-}" ]; then
+  echo "Injecting Google OAuth credentials into dls-secrets..."
+  kubectl -n dls patch secret dls-secrets -p \
+    "{\"stringData\":{\"google-client-id\":\"$GOOGLE_CLIENT_ID\",\"google-client-secret\":\"$GOOGLE_CLIENT_SECRET\"}}"
+else
+  echo "WARNING: GOOGLE_CLIENT_ID/SECRET not set (no docker/.env) - Google login will be disabled."
+fi
+
 # 2. Infrastructure (databases, kafka)
 echo "[2/7] Deploying infrastructure..."
 kubectl apply -f "$SCRIPT_DIR/infrastructure/postgres.yaml"
 kubectl apply -f "$SCRIPT_DIR/infrastructure/mongodb.yaml"
 kubectl apply -f "$SCRIPT_DIR/infrastructure/redis.yaml"
 kubectl apply -f "$SCRIPT_DIR/infrastructure/kafka.yaml"
+kubectl apply -f "$SCRIPT_DIR/infrastructure/ollama.yaml"
 
 echo "Waiting for infrastructure to be ready..."
 kubectl wait --for=condition=ready pod -l app=postgres -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=mongodb -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=redis -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=kafka -n dls --timeout=120s
+# First start pulls the qwen3:4b model (~2.5 GB) into the PVC
+kubectl wait --for=condition=ready pod -l app=ollama -n dls --timeout=600s
 
 # 3. Keycloak
 echo "[3/7] Deploying Keycloak..."

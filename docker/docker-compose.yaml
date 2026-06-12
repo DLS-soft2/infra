@@ -12,6 +12,9 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      # Substituted into dls-realm.json on import; real values live in docker/.env (gitignored)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-google-oauth-not-configured}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-google-oauth-not-configured}
     volumes:
       - ./keycloak/dls-realm.json:/opt/keycloak/data/import/dls-realm.json:ro
     healthcheck:
@@ -61,6 +64,32 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - default
+
+  ollama:
+    image: ollama/ollama:0.30.8
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    networks:
+      - default
+
+  # One-shot: pulls the model into ollama_data on first run (~2.5 GB), no-op afterwards
+  ollama-pull:
+    image: ollama/ollama:0.30.8
+    entrypoint: ["ollama", "pull", "${OLLAMA_MODEL:-qwen3:4b}"]
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
     networks:
       - default
 
@@ -214,9 +243,11 @@ services:
     ports:
       - "8006:8000"
     environment:
-      OLLAMA_BASE_URL: http://host.docker.internal:11434
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b}
+    depends_on:
+      ollama-pull:
+        condition: service_completed_successfully
     networks:
       - default
 
@@ -224,6 +255,7 @@ volumes:
   postgres_data:
   mongodb_data:
   redis_data:
+  ollama_data:
 
 networks:
   default:

@@ -19,7 +19,7 @@ check_pod() {
 }
 
 echo "Infrastructure:"
-for svc in postgres mongodb redis kafka keycloak; do
+for svc in postgres mongodb redis kafka keycloak ollama; do
   check_pod $svc
 done
 

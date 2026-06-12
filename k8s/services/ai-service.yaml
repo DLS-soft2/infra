@@ -20,9 +20,10 @@ spec:
           ports:
             - containerPort: 8000
           env:
-            # Ollama must be running on host; fallback scorer activates if unreachable
             - name: OLLAMA_BASE_URL
-              value: "http://host.minikube.internal:11434"
+              value: "http://ollama:11434"
+            - name: OLLAMA_MODEL
+              value: "qwen3:4b"
           resources:
             requests:
               memory: "256Mi"
