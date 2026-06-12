@@ -94,6 +94,49 @@ Requires Ollama running on the host. The compose file maps `host.docker.internal
 
 Targets Minikube. All resources deploy to the `dls` namespace.
 
+### Prerequisites
+
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) (`minikube version`)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) (`kubectl version --client`)
+- [Helm](https://helm.sh/docs/intro/install/) (`helm version`)
+- [Docker](https://docs.docker.com/get-docker/) (`docker --version`)
+
+### Start Cluster
+
+```bash
+minikube start --cpus=8 --memory=16384 --driver=docker --disk-size=40g
+```
+
+Minimum recommended: 8 CPUs, 16 GB RAM, 40 GB disk. The stack runs 6 infrastructure pods + 9 application pods + monitoring + KEDA.
+
+### Build Images Locally
+
+GHCR packages are private, so images must be built inside minikube's Docker daemon:
+
+```bash
+# Point your shell's Docker CLI at minikube's Docker daemon
+eval $(minikube docker-env)
+
+# Build all services (from the repo root)
+MINIKUBE_IP=$(minikube ip)
+
+docker build -t ghcr.io/dls-soft2/api-gateway:latest        api-gateway/
+docker build -t ghcr.io/dls-soft2/order-service:latest       order-service/
+docker build -t ghcr.io/dls-soft2/payment-service:latest     payment-service/
+docker build -t ghcr.io/dls-soft2/restaurant-service:latest  restaurant-service/
+docker build -t ghcr.io/dls-soft2/courier-service:latest     courier-service/
+docker build -t ghcr.io/dls-soft2/notification-service:latest notification-service/
+docker build -t ghcr.io/dls-soft2/user-service:latest        user-service/
+docker build -t ghcr.io/dls-soft2/ai-service:latest          ai-service/
+docker build -t ghcr.io/dls-soft2/frontend:latest \
+  --build-arg VITE_KEYCLOAK_URL=http://${MINIKUBE_IP}:30080  frontend/
+
+# Return to host Docker (optional)
+eval $(minikube docker-env -u)
+```
+
+The frontend needs `VITE_KEYCLOAK_URL` at build time because the browser talks directly to Keycloak for OAuth. The other `VITE_*` vars default to empty (nginx proxies `/api/` and `/api/v1/ws/` to the gateway and notification-service respectively).
+
 ### Deploy
 
 ```bash

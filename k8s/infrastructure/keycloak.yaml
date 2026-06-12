@@ -25,7 +25,7 @@ data:
           "publicClient": true,
           "directAccessGrantsEnabled": true,
           "standardFlowEnabled": true,
-          "redirectUris": ["http://localhost:*", "http://127.0.0.1:*"],
+          "redirectUris": ["http://localhost:*", "http://127.0.0.1:*", "http://192.168.49.2:*"],
           "webOrigins": ["*"],
           "protocol": "openid-connect",
           "fullScopeAllowed": true,
@@ -291,7 +291,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:26.2.4
-          command: ["start-dev", "--import-realm"]
+          args: ["start-dev", "--import-realm"]
           ports:
             - containerPort: 8080
           env:

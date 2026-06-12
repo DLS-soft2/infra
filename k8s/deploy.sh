@@ -2,8 +2,35 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 echo "=== DLS-2 Kubernetes Deployment ==="
+
+# Prerequisites check
+echo "Checking prerequisites..."
+for cmd in minikube kubectl helm docker; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "ERROR: $cmd is not installed. See infra/README.md for prerequisites."
+    exit 1
+  fi
+done
+
+if ! minikube status &>/dev/null; then
+  echo "ERROR: Minikube is not running. Start it with:"
+  echo "  minikube start --cpus=8 --memory=16384 --driver=docker --disk-size=40g"
+  exit 1
+fi
+
+MINIKUBE_IP=$(minikube ip)
+echo "Minikube is running at $MINIKUBE_IP"
+
+# 0. Build frontend with correct Keycloak URL for minikube
+echo "[0/7] Building frontend image with VITE_KEYCLOAK_URL=http://$MINIKUBE_IP:30080..."
+eval $(minikube docker-env)
+docker build -t ghcr.io/dls-soft2/frontend:latest \
+  --build-arg VITE_KEYCLOAK_URL="http://$MINIKUBE_IP:30080" \
+  "$REPO_ROOT/frontend/"
+echo "Frontend image built successfully."
 
 # 1. Namespace + secrets
 echo "[1/7] Creating namespace and secrets..."
@@ -51,6 +78,11 @@ kubectl wait --for=condition=ready pod -l app=keycloak -n dls --timeout=180s
 echo "[4/7] Deploying application services..."
 kubectl apply -f "$SCRIPT_DIR/services/"
 
+# Auto-patch MINIKUBE_IP in api-gateway KEYCLOAK_ISSUER_URL
+echo "Patching api-gateway KEYCLOAK_ISSUER_URL with MINIKUBE_IP=$MINIKUBE_IP..."
+kubectl set env deployment/api-gateway -n dls \
+  KEYCLOAK_ISSUER_URL="http://$MINIKUBE_IP:30080/realms/dls"
+
 echo "Waiting for services to be ready..."
 for svc in api-gateway order-service payment-service restaurant-service courier-service notification-service user-service ai-service frontend; do
   kubectl wait --for=condition=ready pod -l app=$svc -n dls --timeout=120s
@@ -73,12 +105,10 @@ kubectl apply -f "$SCRIPT_DIR/monitoring/service-monitor.yaml"
 # 7. Summary
 echo "[7/7] Deployment complete!"
 echo ""
-MINIKUBE_IP=$(minikube ip 2>/dev/null || echo "localhost")
 echo "Access points:"
 echo "  Frontend:     http://$MINIKUBE_IP:30010"
 echo "  API Gateway:  http://$MINIKUBE_IP:30000"
 echo "  Keycloak:     http://$MINIKUBE_IP:30080"
 echo "  Grafana:      http://$MINIKUBE_IP:30030 (admin/admin)"
 echo ""
-echo "NOTE: Update api-gateway KEYCLOAK_ISSUER_URL if needed:"
-echo "  kubectl set env deployment/api-gateway -n dls KEYCLOAK_ISSUER_URL=http://$MINIKUBE_IP:30080/realms/dls"
+echo "api-gateway KEYCLOAK_ISSUER_URL has been auto-patched to http://$MINIKUBE_IP:30080/realms/dls"

@@ -61,7 +61,7 @@ spec:
       containers:
         - name: frontend
           image: ghcr.io/dls-soft2/frontend:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never  # Always use locally-built image (bakes VITE_KEYCLOAK_URL for minikube) - figuring out how to vite envs is a pain, so this is easier for now
           ports:
             - containerPort: 80
           volumeMounts:
