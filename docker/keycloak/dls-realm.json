@@ -2,13 +2,27 @@
   "realm": "dls",
   "enabled": true,
   "registrationAllowed": true,
-  "defaultRoles": ["customer"],
+  "defaultRoles": [
+    "customer"
+  ],
   "roles": {
     "realm": [
-      { "name": "customer", "description": "Customer role" },
-      { "name": "courier", "description": "Courier role" },
-      { "name": "restaurant", "description": "Restaurant role" },
-      { "name": "admin", "description": "Admin role" }
+      {
+        "name": "customer",
+        "description": "Customer role"
+      },
+      {
+        "name": "courier",
+        "description": "Courier role"
+      },
+      {
+        "name": "restaurant",
+        "description": "Restaurant role"
+      },
+      {
+        "name": "admin",
+        "description": "Admin role"
+      }
     ]
   },
   "clients": [
@@ -18,8 +32,13 @@
       "publicClient": true,
       "directAccessGrantsEnabled": true,
       "standardFlowEnabled": true,
-      "redirectUris": ["http://localhost:*", "http://127.0.0.1:*"],
-      "webOrigins": ["*"],
+      "redirectUris": [
+        "http://localhost:*",
+        "http://127.0.0.1:*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
       "protocol": "openid-connect",
       "fullScopeAllowed": true,
       "protocolMappers": [
@@ -55,41 +74,13 @@
         "useJwksUrl": "true",
         "syncMode": "IMPORT"
       }
-    },
-    {
-      "alias": "facebook",
-      "displayName": "Facebook",
-      "providerId": "facebook",
-      "enabled": true,
-      "trustEmail": true,
-      "storeToken": false,
-      "addReadTokenRoleOnCreate": false,
-      "authenticateByDefault": false,
-      "linkOnly": false,
-      "firstBrokerLoginFlowAlias": "first broker login",
-      "config": {
-        "clientId": "FACEBOOK_CLIENT_ID",
-        "clientSecret": "FACEBOOK_CLIENT_SECRET",
-        "defaultScope": "email,public_profile",
-        "useJwksUrl": "true",
-        "syncMode": "IMPORT"
-      }
     }
   ],
   "identityProviderMappers": [
     {
       "name": "google-role-mapper",
       "identityProviderAlias": "google",
-      "identityProviderMapper": "hardcoded-role-idp-mapper",
-      "config": {
-        "syncMode": "INHERIT",
-        "role": "customer"
-      }
-    },
-    {
-      "name": "facebook-role-mapper",
-      "identityProviderAlias": "facebook",
-      "identityProviderMapper": "hardcoded-role-idp-mapper",
+      "identityProviderMapper": "oidc-hardcoded-role-idp-mapper",
       "config": {
         "syncMode": "INHERIT",
         "role": "customer"
@@ -111,7 +102,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["customer"]
+      "realmRoles": [
+        "customer"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-000000000002",
@@ -127,7 +120,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["courier"]
+      "realmRoles": [
+        "courier"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-000000000003",
@@ -143,7 +138,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["restaurant"]
+      "realmRoles": [
+        "restaurant"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-c00000000001",
@@ -159,7 +156,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["courier"]
+      "realmRoles": [
+        "courier"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-c00000000002",
@@ -175,7 +174,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["courier"]
+      "realmRoles": [
+        "courier"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-c00000000003",
@@ -191,7 +192,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["courier"]
+      "realmRoles": [
+        "courier"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-c00000000004",
@@ -207,7 +210,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["courier"]
+      "realmRoles": [
+        "courier"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-c00000000005",
@@ -223,7 +228,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["courier"]
+      "realmRoles": [
+        "courier"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-d00000000001",
@@ -239,7 +246,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["restaurant"]
+      "realmRoles": [
+        "restaurant"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-d00000000002",
@@ -255,7 +264,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["restaurant"]
+      "realmRoles": [
+        "restaurant"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-d00000000003",
@@ -271,7 +282,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["restaurant"]
+      "realmRoles": [
+        "restaurant"
+      ]
     },
     {
       "id": "aaaaaaaa-1111-2222-3333-d00000000004",
@@ -287,7 +300,9 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["restaurant"]
+      "realmRoles": [
+        "restaurant"
+      ]
     }
   ]
 }
