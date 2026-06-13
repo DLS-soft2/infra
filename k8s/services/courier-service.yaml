@@ -67,6 +67,7 @@ metadata:
   labels:
     app: courier-service
     monitoring: enabled
+    service-type: java
 spec:
   type: ClusterIP
   selector:

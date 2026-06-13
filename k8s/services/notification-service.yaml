@@ -62,6 +62,7 @@ metadata:
   labels:
     app: notification-service
     monitoring: enabled
+    service-type: python
 spec:
   type: ClusterIP
   selector:

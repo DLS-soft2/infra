@@ -9,4 +9,5 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
   --set grafana.service.type=NodePort \
   --set grafana.service.nodePort=30030 \
   --set grafana.adminPassword=admin \
+  --set grafana.defaultDashboardsEnabled=false \
   --wait --timeout 5m

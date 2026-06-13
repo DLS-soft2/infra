@@ -54,6 +54,7 @@ metadata:
   labels:
     app: restaurant-service
     monitoring: enabled
+    service-type: java
 spec:
   type: ClusterIP
   selector:

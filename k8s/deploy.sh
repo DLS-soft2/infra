@@ -101,14 +101,24 @@ if ! kubectl get namespace monitoring &>/dev/null; then
   bash "$SCRIPT_DIR/monitoring/monitoring-install.sh"
 fi
 kubectl apply -f "$SCRIPT_DIR/monitoring/service-monitor.yaml"
+kubectl apply -f "$SCRIPT_DIR/monitoring/dashboards/"
 
-# 7. Summary
-echo "[7/7] Deployment complete!"
+# 7. Port-forward + summary
+# Kill any existing port-forward on port 3000
+lsof -ti:3000 2>/dev/null | xargs kill 2>/dev/null || true
+echo "[7/7] Starting port-forward for frontend..."
+kubectl port-forward svc/frontend -n dls 3000:80 &>/dev/null &
+PF_PID=$!
+sleep 1
+
 echo ""
-echo "Access points:"
-echo "  Frontend:     http://$MINIKUBE_IP:30010"
-echo "  API Gateway:  http://$MINIKUBE_IP:30000"
+echo "=== Deployment complete! ==="
+echo ""
+echo "  Frontend:     http://localhost:3000  (port-forward, PID $PF_PID)"
 echo "  Keycloak:     http://$MINIKUBE_IP:30080"
+echo "  API Gateway:  http://$MINIKUBE_IP:30000"
 echo "  Grafana:      http://$MINIKUBE_IP:30030 (admin/admin)"
 echo ""
+echo "Port-forward is required: Keycloak JS needs Web Crypto API (only available on https or localhost)."
+echo "To stop port-forward: kill $PF_PID"
 echo "api-gateway KEYCLOAK_ISSUER_URL has been auto-patched to http://$MINIKUBE_IP:30080/realms/dls"

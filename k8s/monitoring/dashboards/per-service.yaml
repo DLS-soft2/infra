@@ -1,0 +1,440 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-per-service
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+    release: kube-prometheus-stack
+data:
+  per-service.json: |
+    {
+      "__inputs": [],
+      "__requires": [],
+      "annotations": { "list": [] },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "id": 100,
+          "title": "Health",
+          "type": "row",
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+          "collapsed": false,
+          "panels": []
+        },
+        {
+          "id": 1,
+          "title": "Status",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "up{job=~\".*$service.*\"}",
+              "legendFormat": "$service"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "type": "value",
+                  "options": {
+                    "0": { "text": "DOWN", "color": "red" },
+                    "1": { "text": "UP", "color": "green" }
+                  }
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "value": null, "color": "red" },
+                  { "value": 1, "color": "green" }
+                ]
+              },
+              "color": { "mode": "thresholds" }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "colorMode": "background",
+            "graphMode": "none",
+            "textMode": "value_and_name"
+          }
+        },
+        {
+          "id": 2,
+          "title": "Pod Restarts",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"dls\", pod=~\"$service.*\"})",
+              "legendFormat": "Restarts"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "value": null, "color": "green" },
+                  { "value": 3, "color": "yellow" },
+                  { "value": 10, "color": "red" }
+                ]
+              },
+              "color": { "mode": "thresholds" }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "colorMode": "background",
+            "graphMode": "none",
+            "textMode": "value_and_name"
+          }
+        },
+        {
+          "id": 3,
+          "title": "CPU",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"dls\", pod=~\"$service.*\", container!=\"\"}[5m]))",
+              "legendFormat": "CPU"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cores",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "value": null, "color": "green" },
+                  { "value": 0.5, "color": "yellow" },
+                  { "value": 1, "color": "red" }
+                ]
+              },
+              "color": { "mode": "thresholds" }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "colorMode": "background",
+            "graphMode": "none",
+            "textMode": "value_and_name"
+          }
+        },
+        {
+          "id": 4,
+          "title": "Memory",
+          "type": "stat",
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(container_memory_usage_bytes{namespace=\"dls\", pod=~\"$service.*\", container!=\"\"})",
+              "legendFormat": "Memory"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "decbytes",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "value": null, "color": "green" },
+                  { "value": 268435456, "color": "yellow" },
+                  { "value": 536870912, "color": "red" }
+                ]
+              },
+              "color": { "mode": "thresholds" }
+            },
+            "overrides": []
+          },
+          "options": {
+            "reduceOptions": { "calcs": ["lastNotNull"] },
+            "colorMode": "background",
+            "graphMode": "none",
+            "textMode": "value_and_name"
+          }
+        },
+        {
+          "id": 101,
+          "title": "HTTP Errors",
+          "type": "row",
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+          "collapsed": false,
+          "panels": []
+        },
+        {
+          "id": 5,
+          "title": "Errors Over Time",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(http_requests_total{namespace=\"dls\", pod=~\"$service.*\", status_code=~\"[45]..\"}[5m])) by (status_code, handler)",
+              "legendFormat": "{{ handler }} [{{ status_code }}]"
+            },
+            {
+              "refId": "B",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"dls\", pod=~\"$service.*\", status=~\"[45]..\"}[5m])) by (status, uri)",
+              "legendFormat": "{{ uri }} [{{ status }}]"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": { "mode": "multi", "sort": "desc" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        },
+        {
+          "id": 102,
+          "title": "Endpoint Breakdown",
+          "type": "row",
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+          "collapsed": false,
+          "panels": []
+        },
+        {
+          "id": 6,
+          "title": "Endpoint Activity",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 15 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(http_requests_total{namespace=\"dls\", pod=~\"$service.*\", handler!=\"/metrics\", handler!=\"/health\", handler!=\"/healthy\"}[5m])) by (handler, status_code)",
+              "legendFormat": "{{ handler }} [{{ status_code }}]"
+            },
+            {
+              "refId": "B",
+              "expr": "sum(rate(http_server_requests_seconds_count{namespace=\"dls\", pod=~\"$service.*\", uri!=\"/actuator/prometheus\", uri!=\"/actuator/health\"}[5m])) by (uri, status)",
+              "legendFormat": "{{ uri }} [{{ status }}]"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": { "mode": "multi", "sort": "desc" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        },
+        {
+          "id": 103,
+          "title": "Resource Usage Over Time",
+          "type": "row",
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+          "collapsed": false,
+          "panels": []
+        },
+        {
+          "id": 7,
+          "title": "CPU Over Time",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"dls\", pod=~\"$service.*\", container!=\"\"}[5m]))",
+              "legendFormat": "CPU"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cores",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": { "mode": "multi", "sort": "desc" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        },
+        {
+          "id": 8,
+          "title": "Memory Over Time",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(container_memory_usage_bytes{namespace=\"dls\", pod=~\"$service.*\", container!=\"\"})",
+              "legendFormat": "Memory"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "decbytes",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": { "mode": "multi", "sort": "desc" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        },
+        {
+          "id": 104,
+          "title": "JVM",
+          "type": "row",
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+          "collapsed": false,
+          "panels": []
+        },
+        {
+          "id": 9,
+          "title": "JVM Heap",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 33 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(jvm_memory_used_bytes{namespace=\"dls\", pod=~\"$service.*\", area=\"heap\"})",
+              "legendFormat": "Heap Used"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "decbytes",
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": { "mode": "multi", "sort": "desc" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        },
+        {
+          "id": 10,
+          "title": "JVM Threads",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 33 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "jvm_threads_live_threads{namespace=\"dls\", pod=~\"$service.*\"}",
+              "legendFormat": "Live Threads"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": { "mode": "multi", "sort": "desc" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        }
+      ],
+      "refresh": "10s",
+      "schemaVersion": 39,
+      "tags": ["dls-2", "per-service", "detail"],
+      "templating": {
+        "list": [
+          {
+            "name": "service",
+            "type": "custom",
+            "query": "api-gateway,order-service,payment-service,restaurant-service,courier-service,notification-service,user-service,ai-service",
+            "current": { "text": "order-service", "value": "order-service" },
+            "multi": false,
+            "includeAll": false,
+            "options": [
+              { "text": "api-gateway", "value": "api-gateway", "selected": false },
+              { "text": "order-service", "value": "order-service", "selected": true },
+              { "text": "payment-service", "value": "payment-service", "selected": false },
+              { "text": "restaurant-service", "value": "restaurant-service", "selected": false },
+              { "text": "courier-service", "value": "courier-service", "selected": false },
+              { "text": "notification-service", "value": "notification-service", "selected": false },
+              { "text": "user-service", "value": "user-service", "selected": false },
+              { "text": "ai-service", "value": "ai-service", "selected": false }
+            ]
+          }
+        ]
+      },
+      "time": { "from": "now-1h", "to": "now" },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "DLS-2 Per-Service Detail",
+      "uid": "dls-per-service",
+      "version": 1
+    }

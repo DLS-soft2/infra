@@ -67,6 +67,7 @@ metadata:
   labels:
     app: order-service
     monitoring: enabled
+    service-type: python
 spec:
   type: ClusterIP
   selector:

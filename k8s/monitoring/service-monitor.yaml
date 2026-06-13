@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: dls-services
+  name: dls-python-services
   namespace: monitoring
   labels:
     release: kube-prometheus-stack
@@ -11,11 +11,27 @@ spec:
       - dls
   selector:
     matchLabels:
-      monitoring: enabled
+      service-type: python
   endpoints:
     - port: http
       path: /metrics
       interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dls-java-services
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames:
+      - dls
+  selector:
+    matchLabels:
+      service-type: java
+  endpoints:
     - port: http
       path: /actuator/prometheus
       interval: 15s
