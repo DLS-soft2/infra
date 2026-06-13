@@ -58,7 +58,7 @@ def poll_order_status(order_id: str, target_status: str, timeout: int = SAGA_TIM
 
 
 def test_payment_failed_order_cancelled():
-    """S2: Order with amount > 10000 triggers PaymentFailed -> CANCELLED.
+    """Order with amount > 10000 triggers PaymentFailed -> CANCELLED.
 
     payment-service's simulate_payment rejects amounts > 10000 with
     'Amount exceeds maximum limit'. This causes a PaymentFailed event

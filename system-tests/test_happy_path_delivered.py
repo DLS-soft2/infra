@@ -92,7 +92,7 @@ def poll_order_status(
 
 
 def test_full_happy_path_delivered():
-    """S1: Full saga PENDING -> PAID -> PREPARING -> OUT_FOR_DELIVERY -> DELIVERED.
+    """Full saga PENDING -> PAID -> PREPARING -> OUT_FOR_DELIVERY -> DELIVERED.
 
     1. Create order (PENDING) -> payment-service auto-authorizes -> PAID.
     2. Restaurant owner accepts order -> RestaurantAccepted -> PREPARING.

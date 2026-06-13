@@ -65,7 +65,7 @@ def poll_order_status(order_id: str, target_status: str, timeout: int = SAGA_TIM
 
 
 def test_restaurant_rejected_order_cancelled():
-    """S3: Restaurant rejects a PAID order -> PaymentRefunded -> CANCELLED.
+    """Restaurant rejects a PAID order -> PaymentRefunded -> CANCELLED.
 
     1. Create order (PENDING) -> payment-service authorizes -> PAID.
     2. Restaurant owner rejects the order with a reason.
