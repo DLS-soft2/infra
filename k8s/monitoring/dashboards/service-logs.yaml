@@ -19,38 +19,14 @@ data:
       "panels": [
         {
           "id": 1,
-          "title": "All Services Logs",
+          "title": "$service logs",
           "type": "logs",
-          "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+          "gridPos": { "h": 24, "w": 24, "x": 0, "y": 0 },
           "datasource": { "type": "loki", "uid": "loki" },
           "targets": [
             {
               "refId": "A",
-              "expr": "{namespace=\"dls\"}",
-              "queryType": "range"
-            }
-          ],
-          "options": {
-            "showTime": true,
-            "showLabels": true,
-            "showCommonLabels": false,
-            "wrapLogMessage": true,
-            "prettifyLogMessage": false,
-            "enableLogDetails": true,
-            "sortOrder": "Descending",
-            "dedupStrategy": "none"
-          }
-        },
-        {
-          "id": 2,
-          "title": "Saga Services Logs",
-          "type": "logs",
-          "gridPos": { "h": 12, "w": 24, "x": 0, "y": 12 },
-          "datasource": { "type": "loki", "uid": "loki" },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "{namespace=\"dls\", pod=~\"order-service.*|payment-service.*|restaurant-service.*|courier-service.*|notification-service.*\"}",
+              "expr": "{namespace=\"dls\", pod=~\"$service.*\"}",
               "queryType": "range"
             }
           ],
@@ -69,11 +45,42 @@ data:
       "refresh": "10s",
       "schemaVersion": 39,
       "tags": ["dls-2", "logs", "loki"],
-      "templating": { "list": [] },
+      "templating": {
+        "list": [
+          {
+            "current": { "selected": false, "text": "order-service", "value": "order-service" },
+            "hide": 0,
+            "includeAll": true,
+            "label": "Service",
+            "multi": false,
+            "name": "service",
+            "options": [
+              { "selected": false, "text": "All", "value": "$__all" },
+              { "selected": true,  "text": "order-service", "value": "order-service" },
+              { "selected": false, "text": "payment-service", "value": "payment-service" },
+              { "selected": false, "text": "restaurant-service", "value": "restaurant-service" },
+              { "selected": false, "text": "courier-service", "value": "courier-service" },
+              { "selected": false, "text": "notification-service", "value": "notification-service" },
+              { "selected": false, "text": "user-service", "value": "user-service" },
+              { "selected": false, "text": "ai-service", "value": "ai-service" },
+              { "selected": false, "text": "api-gateway", "value": "api-gateway" },
+              { "selected": false, "text": "frontend", "value": "frontend" },
+              { "selected": false, "text": "kafka", "value": "kafka" },
+              { "selected": false, "text": "postgres", "value": "postgres" },
+              { "selected": false, "text": "keycloak", "value": "keycloak" },
+              { "selected": false, "text": "redis", "value": "redis" },
+              { "selected": false, "text": "mongodb", "value": "mongodb" },
+              { "selected": false, "text": "ollama", "value": "ollama" }
+            ],
+            "query": "",
+            "type": "custom"
+          }
+        ]
+      },
       "time": { "from": "now-1h", "to": "now" },
       "timepicker": {},
       "timezone": "browser",
       "title": "DLS-2 Service Logs",
       "uid": "dls-service-logs",
-      "version": 1
+      "version": 2
     }

@@ -11,8 +11,10 @@ helm upgrade --install loki grafana/loki \
   --set loki.auth_enabled=false \
   --set loki.commonConfig.replication_factor=1 \
   --set loki.storage.type=filesystem \
+  --set loki.useTestSchema=true \
   --set loki.limits_config.retention_period=24h \
   --set loki.compactor.retention_enabled=true \
+  --set loki.compactor.delete_request_store=filesystem \
   --set singleBinary.replicas=1 \
   --set read.replicas=0 \
   --set write.replicas=0 \
@@ -22,20 +24,54 @@ helm upgrade --install loki grafana/loki \
   --set gateway.enabled=false \
   --wait --timeout 5m
 
-helm upgrade --install promtail grafana/promtail \
+ALLOY_VALUES=$(mktemp)
+cat > "$ALLOY_VALUES" <<'EOF'
+alloy:
+  configMap:
+    content: |
+      discovery.kubernetes "pods" {
+        role = "pod"
+        namespaces {
+          names = ["dls"]
+        }
+      }
+
+      discovery.relabel "pods" {
+        targets = discovery.kubernetes.pods.targets
+
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app"]
+          target_label  = "app"
+        }
+      }
+
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pods.output
+        forward_to = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        }
+      }
+EOF
+
+helm upgrade --install alloy grafana/alloy \
   --namespace monitoring \
-  --set config.clients[0].url=http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push \
-  --set config.snippets.scrapeConfigs='- job_name: dls-pods
-  kubernetes_sd_configs:
-    - role: pod
-      namespaces:
-        names:
-          - dls
-  relabel_configs:
-    - source_labels: [__meta_kubernetes_namespace]
-      target_label: namespace
-    - source_labels: [__meta_kubernetes_pod_name]
-      target_label: pod
-    - source_labels: [__meta_kubernetes_pod_container_name]
-      target_label: container' \
+  --values "$ALLOY_VALUES" \
   --wait --timeout 5m
+
+rm -f "$ALLOY_VALUES"

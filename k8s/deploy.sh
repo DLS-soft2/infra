@@ -100,7 +100,7 @@ echo "[6/7] Installing monitoring stack..."
 if ! kubectl get namespace monitoring &>/dev/null; then
   bash "$SCRIPT_DIR/monitoring/monitoring-install.sh"
 fi
-if ! helm status loki -n monitoring &>/dev/null; then
+if ! helm status loki -n monitoring &>/dev/null || ! helm status alloy -n monitoring &>/dev/null; then
   bash "$SCRIPT_DIR/monitoring/loki-install.sh"
 fi
 kubectl apply -f "$SCRIPT_DIR/monitoring/loki-datasource.yaml"

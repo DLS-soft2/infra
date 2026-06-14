@@ -29,8 +29,15 @@ infra/
       notification-dispatch.yaml ScaledJob for notification processing
     monitoring/
       monitoring-install.sh      Installs Prometheus + Grafana via Helm
+      loki-install.sh            Installs Loki + Alloy via Helm
       grafana-nodeport.yaml      Exposes Grafana on NodePort 30030
       service-monitor.yaml       Scrapes /metrics and /actuator/prometheus
+      loki-datasource.yaml       Auto-provisions Loki datasource in Grafana
+      dashboards/
+        platform-overview.yaml   Platform health, errors, resource usage
+        saga-flow.yaml           Saga service health and endpoint activity
+        per-service.yaml         Per-service drilldown (dropdown selector)
+        service-logs.yaml        Cross-service log viewer (Loki)
 ```
 
 ## Docker Compose (Development)
@@ -149,7 +156,7 @@ Runs 7 steps in order:
 3. Keycloak (with readiness wait)
 4. Application services (all 9 services + frontend)
 5. KEDA (installs via Helm if not present)
-6. Monitoring (Prometheus + Grafana via Helm)
+6. Monitoring (Prometheus + Grafana via Helm, Loki + Promtail for log aggregation)
 7. Prints access URLs
 
 ### Access Points (Minikube)
@@ -200,3 +207,20 @@ Prometheus + Grafana stack installed via `monitoring/monitoring-install.sh`.
   - `/actuator/prometheus` on Java services (Spring Boot)
   - 15-second scrape interval, targets pods with label `monitoring: enabled`
 - **Grafana** exposed on NodePort 30030, default credentials `admin/admin`
+
+### Log Aggregation (Loki + Alloy)
+
+Installed via `monitoring/loki-install.sh`. Grafana Alloy runs as a DaemonSet that collects stdout logs from all pods in the `dls` namespace and pushes them to Loki (single-binary mode, filesystem storage, 24-hour retention). No application-side changes were needed — all services already log to stdout.
+
+Loki is auto-provisioned as a Grafana datasource via `monitoring/loki-datasource.yaml` (ConfigMap with `grafana_datasource: "1"` label, picked up by the Grafana sidecar).
+
+### Dashboards
+
+Four dashboards are deployed as ConfigMaps in `monitoring/dashboards/` and auto-discovered by the Grafana sidecar:
+
+| Dashboard | Datasource | What it shows |
+|-----------|------------|---------------|
+| DLS-2 Platform Overview | Prometheus | Service up/down, 5xx/4xx errors, pod restarts, CPU/memory |
+| DLS-2 Saga Flow | Prometheus | Saga service health, error rates, endpoint activity |
+| DLS-2 Per-Service Detail | Prometheus | Dropdown per service — health, errors, endpoints, resources |
+| DLS-2 Service Logs | Loki | Dropdown per service — live log stream from any pod |
