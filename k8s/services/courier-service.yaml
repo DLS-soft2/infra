@@ -21,7 +21,7 @@ spec:
             - containerPort: 8000
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres:5432/courier_db"
+              value: "jdbc:postgresql://postgres-courier:5432/courier_db"
             - name: SPRING_DATASOURCE_USERNAME
               value: "postgres"
             - name: SPRING_DATASOURCE_PASSWORD

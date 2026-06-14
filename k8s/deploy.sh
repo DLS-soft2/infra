@@ -61,7 +61,7 @@ kubectl apply -f "$SCRIPT_DIR/infrastructure/kafka.yaml"
 kubectl apply -f "$SCRIPT_DIR/infrastructure/ollama.yaml"
 
 echo "Waiting for infrastructure to be ready..."
-kubectl wait --for=condition=ready pod -l app=postgres -n dls --timeout=120s
+kubectl wait --for=condition=ready pod -l tier=postgres -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=mongodb -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=redis -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=kafka -n dls --timeout=120s
