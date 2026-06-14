@@ -112,9 +112,10 @@ Targets Minikube. All resources deploy to the `dls` namespace.
 
 ```bash
 minikube start --cpus=8 --memory=16384 --driver=docker --disk-size=40g
+minikube ssh -- sudo sysctl fs.inotify.max_user_instances=1024
 ```
 
-Minimum recommended: 8 CPUs, 16 GB RAM, 40 GB disk. The stack runs 6 infrastructure pods + 9 application pods + monitoring + KEDA.
+Minimum recommended: 8 CPUs, 16 GB RAM, 40 GB disk. The stack runs 6 infrastructure pods + 9 application pods + monitoring + KEDA. The `sysctl` command raises the inotify watcher limit inside minikube — without it, the monitoring stack (Alloy, Grafana sidecars) hits "too many open files" errors. This resets on `minikube stop/start` so run it each time.
 
 ### Build Images Locally
 

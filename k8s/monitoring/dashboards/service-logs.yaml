@@ -48,32 +48,20 @@ data:
       "templating": {
         "list": [
           {
-            "current": { "selected": false, "text": "order-service", "value": "order-service" },
+            "current": { "selected": false, "text": "All", "value": "$__all" },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "definition": "label_values({namespace=\"dls\"}, pod)",
             "hide": 0,
             "includeAll": true,
+            "allValue": ".*",
             "label": "Service",
             "multi": false,
             "name": "service",
-            "options": [
-              { "selected": false, "text": "All", "value": "$__all" },
-              { "selected": true,  "text": "order-service", "value": "order-service" },
-              { "selected": false, "text": "payment-service", "value": "payment-service" },
-              { "selected": false, "text": "restaurant-service", "value": "restaurant-service" },
-              { "selected": false, "text": "courier-service", "value": "courier-service" },
-              { "selected": false, "text": "notification-service", "value": "notification-service" },
-              { "selected": false, "text": "user-service", "value": "user-service" },
-              { "selected": false, "text": "ai-service", "value": "ai-service" },
-              { "selected": false, "text": "api-gateway", "value": "api-gateway" },
-              { "selected": false, "text": "frontend", "value": "frontend" },
-              { "selected": false, "text": "kafka", "value": "kafka" },
-              { "selected": false, "text": "postgres", "value": "postgres" },
-              { "selected": false, "text": "keycloak", "value": "keycloak" },
-              { "selected": false, "text": "redis", "value": "redis" },
-              { "selected": false, "text": "mongodb", "value": "mongodb" },
-              { "selected": false, "text": "ollama", "value": "ollama" }
-            ],
-            "query": "",
-            "type": "custom"
+            "query": "label_values({namespace=\"dls\"}, pod)",
+            "refresh": 2,
+            "regex": "/^([a-z]+-?[a-z]+)/",
+            "sort": 1,
+            "type": "query"
           }
         ]
       },
