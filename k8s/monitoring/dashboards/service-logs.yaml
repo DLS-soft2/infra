@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-service-logs
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  service-logs.json: |
+    {
+      "__inputs": [],
+      "__requires": [],
+      "annotations": { "list": [] },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "id": 1,
+          "title": "All Services Logs",
+          "type": "logs",
+          "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"dls\"}",
+              "queryType": "range"
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "showLabels": true,
+            "showCommonLabels": false,
+            "wrapLogMessage": true,
+            "prettifyLogMessage": false,
+            "enableLogDetails": true,
+            "sortOrder": "Descending",
+            "dedupStrategy": "none"
+          }
+        },
+        {
+          "id": 2,
+          "title": "Saga Services Logs",
+          "type": "logs",
+          "gridPos": { "h": 12, "w": 24, "x": 0, "y": 12 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "{namespace=\"dls\", pod=~\"order-service.*|payment-service.*|restaurant-service.*|courier-service.*|notification-service.*\"}",
+              "queryType": "range"
+            }
+          ],
+          "options": {
+            "showTime": true,
+            "showLabels": true,
+            "showCommonLabels": false,
+            "wrapLogMessage": true,
+            "prettifyLogMessage": false,
+            "enableLogDetails": true,
+            "sortOrder": "Descending",
+            "dedupStrategy": "none"
+          }
+        }
+      ],
+      "refresh": "10s",
+      "schemaVersion": 39,
+      "tags": ["dls-2", "logs", "loki"],
+      "templating": { "list": [] },
+      "time": { "from": "now-1h", "to": "now" },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "DLS-2 Service Logs",
+      "uid": "dls-service-logs",
+      "version": 1
+    }
