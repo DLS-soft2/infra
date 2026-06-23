@@ -24,9 +24,8 @@ spec:
               value: "http://ollama:11434"
             - name: OLLAMA_MODEL
               value: "qwen3:4b"
-            # MENER AT DET ER SÅDAN HER - SÅ VENTER DEN KUN 2 SEKUNDER PÅ OLLAMA (SOM I IKKE KØRER), OG SÅ DEFAULTER DEN TIL IN-CODE FALLBACK (PRØV DET LIGE, KAN IKKE HUSKE HELT PRÆCIST)
-            # - name: OLLAMA_TIMEOUT_SECONDS
-            #   value: "2"
+            - name: OLLAMA_TIMEOUT_SECONDS
+              value: "120"
           resources:
             requests:
               memory: "256Mi"

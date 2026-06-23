@@ -49,11 +49,11 @@ spec:
                   - "for i in $(seq 1 60); do ollama pull qwen3:4b && exit 0; sleep 5; done; exit 1"
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "250m"
+              memory: "4Gi"
+              cpu: "2"
             limits:
-              memory: "8Gi"
-              cpu: "4"
+              memory: "16Gi"
+              cpu: "18"
           readinessProbe:
             httpGet:
               path: /

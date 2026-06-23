@@ -61,7 +61,7 @@ kubectl apply -f "$SCRIPT_DIR/infrastructure/kafka.yaml"
 kubectl apply -f "$SCRIPT_DIR/infrastructure/ollama.yaml"
 
 echo "Waiting for infrastructure to be ready..."
-kubectl wait --for=condition=ready pod -l app=postgres -n dls --timeout=120s
+kubectl wait --for=condition=ready pod -l tier=postgres -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=mongodb -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=redis -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=kafka -n dls --timeout=120s
@@ -100,6 +100,10 @@ echo "[6/7] Installing monitoring stack..."
 if ! kubectl get namespace monitoring &>/dev/null; then
   bash "$SCRIPT_DIR/monitoring/monitoring-install.sh"
 fi
+if ! helm status loki -n monitoring &>/dev/null || ! helm status alloy -n monitoring &>/dev/null; then
+  bash "$SCRIPT_DIR/monitoring/loki-install.sh"
+fi
+kubectl apply -f "$SCRIPT_DIR/monitoring/loki-datasource.yaml"
 kubectl apply -f "$SCRIPT_DIR/monitoring/service-monitor.yaml"
 kubectl apply -f "$SCRIPT_DIR/monitoring/dashboards/"
 

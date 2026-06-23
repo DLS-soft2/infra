@@ -1,31 +1,16 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-init
-  namespace: dls
-data:
-  init-databases.sh: |
-    #!/bin/bash
-    set -e
-
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-        CREATE DATABASE order_db;
-        CREATE DATABASE payment_db;
-        CREATE DATABASE courier_db;
-        CREATE DATABASE user_db;
-    EOSQL
----
+# postgres-order
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: postgres-order
   namespace: dls
   labels:
-    app: postgres
+    app: postgres-order
+    tier: postgres
 spec:
   clusterIP: None
   selector:
-    app: postgres
+    app: postgres-order
   ports:
     - port: 5432
       targetPort: 5432
@@ -33,20 +18,22 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres
+  name: postgres-order
   namespace: dls
   labels:
-    app: postgres
+    app: postgres-order
+    tier: postgres
 spec:
-  serviceName: postgres
+  serviceName: postgres-order
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: postgres-order
   template:
     metadata:
       labels:
-        app: postgres
+        app: postgres-order
+        tier: postgres
     spec:
       containers:
         - name: postgres
@@ -57,7 +44,7 @@ spec:
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_DB
-              value: postgres
+              value: order_db
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -66,8 +53,6 @@ spec:
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
-            - name: init-scripts
-              mountPath: /docker-entrypoint-initdb.d
           readinessProbe:
             exec:
               command:
@@ -86,11 +71,258 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 3
-      volumes:
-        - name: init-scripts
-          configMap:
-            name: postgres-init
-            defaultMode: 0755
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+# postgres-payment
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-payment
+  namespace: dls
+  labels:
+    app: postgres-payment
+    tier: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-payment
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-payment
+  namespace: dls
+  labels:
+    app: postgres-payment
+    tier: postgres
+spec:
+  serviceName: postgres-payment
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-payment
+  template:
+    metadata:
+      labels:
+        app: postgres-payment
+        tier: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_DB
+              value: payment_db
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dls-secrets
+                  key: postgres-password
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+# postgres-courier
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-courier
+  namespace: dls
+  labels:
+    app: postgres-courier
+    tier: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-courier
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-courier
+  namespace: dls
+  labels:
+    app: postgres-courier
+    tier: postgres
+spec:
+  serviceName: postgres-courier
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-courier
+  template:
+    metadata:
+      labels:
+        app: postgres-courier
+        tier: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_DB
+              value: courier_db
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dls-secrets
+                  key: postgres-password
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+# postgres-user
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-user
+  namespace: dls
+  labels:
+    app: postgres-user
+    tier: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-user
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-user
+  namespace: dls
+  labels:
+    app: postgres-user
+    tier: postgres
+spec:
+  serviceName: postgres-user
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-user
+  template:
+    metadata:
+      labels:
+        app: postgres-user
+        tier: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_DB
+              value: user_db
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dls-secrets
+                  key: postgres-password
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
   volumeClaimTemplates:
     - metadata:
         name: postgres-data

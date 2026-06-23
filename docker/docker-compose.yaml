@@ -245,6 +245,7 @@ services:
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b}
+      OLLAMA_TIMEOUT_SECONDS: "120"
     depends_on:
       ollama-pull:
         condition: service_completed_successfully
