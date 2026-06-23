@@ -26,6 +26,22 @@ fi
 CLUSTER_IP="localhost"
 echo "Kubernetes cluster is reachable (Docker Desktop uses $CLUSTER_IP)"
 
+# Docker Desktop uses 'hostpath' as its default StorageClass, not 'standard'.
+# Our manifests reference storageClassName: standard (minikube's default).
+# Create a 'standard' StorageClass aliasing hostpath so the same manifests work on both.
+if ! kubectl get storageclass standard &>/dev/null; then
+  echo "Creating 'standard' StorageClass for Docker Desktop compatibility..."
+  kubectl apply -f - <<'EOF'
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+provisioner: docker.io/hostpath
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+EOF
+fi
+
 # 0. Build frontend with correct Keycloak URL
 echo "[0/7] Building frontend image with VITE_KEYCLOAK_URL=http://$CLUSTER_IP:30080..."
 docker build -t ghcr.io/dls-soft2/frontend:latest \
@@ -63,7 +79,7 @@ kubectl apply -f "$SCRIPT_DIR/infrastructure/kafka.yaml"
 # To enable Ollama, uncomment and deploy infrastructure/ollama.yaml manually.
 
 echo "Waiting for infrastructure to be ready..."
-kubectl wait --for=condition=ready pod -l app=postgres -n dls --timeout=120s
+kubectl wait --for=condition=ready pod -l tier=postgres -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=mongodb -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=redis -n dls --timeout=120s
 kubectl wait --for=condition=ready pod -l app=kafka -n dls --timeout=120s
