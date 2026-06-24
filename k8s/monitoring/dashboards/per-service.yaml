@@ -111,7 +111,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"dls\", pod=~\"$service.*\", container=~\".+\"}[5m]))",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"dls\", pod=~\"$service.*\"}[5m]))",
               "legendFormat": "CPU"
             }
           ],
@@ -146,7 +146,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(container_memory_usage_bytes{namespace=\"dls\", pod=~\"$service.*\", container=~\".+\"})",
+              "expr": "sum(container_memory_usage_bytes{namespace=\"dls\", pod=~\"$service.*\"})",
               "legendFormat": "Memory"
             }
           ],
@@ -279,7 +279,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"dls\", pod=~\"$service.*\", container=~\".+\"}[5m]))",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"dls\", pod=~\"$service.*\"}[5m]))",
               "legendFormat": "CPU"
             }
           ],
@@ -311,7 +311,7 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(container_memory_usage_bytes{namespace=\"dls\", pod=~\"$service.*\", container=~\".+\"})",
+              "expr": "sum(container_memory_usage_bytes{namespace=\"dls\", pod=~\"$service.*\"})",
               "legendFormat": "Memory"
             }
           ],
