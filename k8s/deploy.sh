@@ -76,16 +76,15 @@ kubectl wait --for=condition=ready pod -l app=keycloak -n dls --timeout=180s
 
 # 4. Application services
 echo "[4/7] Deploying application services..."
-kubectl apply -f "$SCRIPT_DIR/services/"
-
-# Auto-patch MINIKUBE_IP in api-gateway KEYCLOAK_ISSUER_URL
-echo "Patching api-gateway KEYCLOAK_ISSUER_URL with MINIKUBE_IP=$MINIKUBE_IP..."
-kubectl set env deployment/api-gateway -n dls \
-  KEYCLOAK_ISSUER_URL="http://$MINIKUBE_IP:30080/realms/dls"
+sed "s/MINIKUBE_IP/$MINIKUBE_IP/g" "$SCRIPT_DIR/services/api-gateway.yaml" | kubectl apply -f -
+for manifest in "$SCRIPT_DIR"/services/*.yaml; do
+  [ "$(basename "$manifest")" = "api-gateway.yaml" ] && continue
+  kubectl apply -f "$manifest"
+done
 
 echo "Waiting for services to be ready..."
 for svc in api-gateway order-service payment-service restaurant-service courier-service notification-service user-service ai-service frontend; do
-  kubectl wait --for=condition=ready pod -l app=$svc -n dls --timeout=120s
+  kubectl rollout status deployment/$svc -n dls --timeout=120s
 done
 
 # 5. KEDA
@@ -125,4 +124,3 @@ echo "  Grafana:      http://$MINIKUBE_IP:30030 (admin/admin)"
 echo ""
 echo "Port-forward is required: Keycloak JS needs Web Crypto API (only available on https or localhost)."
 echo "To stop port-forward: kill $PF_PID"
-echo "api-gateway KEYCLOAK_ISSUER_URL has been auto-patched to http://$MINIKUBE_IP:30080/realms/dls"
