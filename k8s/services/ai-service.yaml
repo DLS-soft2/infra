@@ -24,6 +24,7 @@ spec:
               value: "http://ollama:11434"
             - name: OLLAMA_MODEL
               value: "qwen3:4b"
+            # ÆNDRE VALUEN HER TIL SÅDAN 10 ELLER SÅDAN NOGET, OG SÅ TEST AT DEN BRUGER IN-CODE FALLBACK
             - name: OLLAMA_TIMEOUT_SECONDS
               value: "120"
           resources:
